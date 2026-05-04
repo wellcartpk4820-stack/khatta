@@ -1,21 +1,41 @@
 // src/types.ts
 
 export interface Env {
-  DB:                   D1Database
-  BUCKET:               R2Bucket
-  APP_URL:              string
-  SESSION_SECRET:       string
-  ADMIN_EMAIL:          string
-  ADMIN_PASSWORD_HASH:  string    // SHA-256 hex of admin password
-  BREVO_API_KEY:        string
-  BREVO_FROM_EMAIL:     string
-  BREVO_FROM_NAME:      string
-  PAYFAST_MERCHANT_ID:  string
-  PAYFAST_SECURED_KEY:  string
-  PAYFAST_STORE_ID:     string
-  PayFast_BASE_URL:     string
+  DB:                  D1Database
+  BUCKET:              R2Bucket
+  APP_URL:             string
+  SESSION_SECRET:      string   // used to sign JWTs — set via: wrangler secret put SESSION_SECRET
+  BREVO_API_KEY:       string
+  BREVO_FROM_EMAIL:    string
+  BREVO_FROM_NAME:     string
+  PAYFAST_MERCHANT_ID: string
+  PAYFAST_SECURED_KEY: string
+  PAYFAST_STORE_ID:    string
+  PayFast_BASE_URL:    string
 }
 
+// ── Admin account ─────────────────────────────────────────────────────────────
+export interface Admin {
+  id:            string
+  email:         string
+  name:          string
+  password_hash: string        // PBKDF2 format: "saltHex:hashHex"
+  reset_token:   string | null
+  reset_expires: string | null
+  created_at:    string
+  updated_at:    string
+}
+
+// ── JWT payload carried in the auth cookie ────────────────────────────────────
+export interface JWTPayload {
+  sub:   string   // admin.id
+  email: string
+  name:  string
+  iat:   number   // issued-at (unix seconds)
+  exp:   number   // expiry   (unix seconds)
+}
+
+// ── Ledger entities ───────────────────────────────────────────────────────────
 export interface Person {
   id:              string
   name:            string
@@ -57,9 +77,17 @@ export interface PersonWithSummary extends Person {
 }
 
 export interface EntryWithPerson extends Entry {
-  person_name:   string
-  person_cnic:   string | null
-  father_name:   string | null
+  person_name: string
+  person_cnic: string | null
+  father_name: string | null
 }
 
-export type HonoEnv = { Bindings: Env; Variables: { adminAuthed: boolean } }
+export type HonoEnv = {
+  Bindings: Env
+  Variables: {
+    adminAuthed: boolean
+    adminId:     string
+    adminEmail:  string
+    adminName:   string
+  }
+}
