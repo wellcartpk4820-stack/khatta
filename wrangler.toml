@@ -5,8 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "khata-book-db"
-database_id = "08a06b50-7cd4-4b8e-bfcc-ea8be8bd1918"
+database_name = "all-rounder"
+database_id = "7f04b9f8-97ce-47cc-9ea7-b10f9e8388a6"
 
 [[r2_buckets]]
 binding = "BUCKET"
