@@ -12,10 +12,18 @@ binding = "BUCKET"
 bucket_name = "khata-proofs"
 
 [vars]
-ADMIN_EMAIL = "aua4820@gmail.com"
-APP_URL = "https://khatta.pages.dev"
+APP_URL          = "https://khatta.pages.dev"
 BREVO_FROM_EMAIL = "info@wellcart.pk"
-BREVO_FROM_NAME = "KhataBook"
+BREVO_FROM_NAME  = "KhataBook"
 PayFast_BASE_URL = "https://ipg1.apps.net.pk"
 PAYFAST_MERCHANT_ID = "22554"
-PAYFAST_STORE_ID = "22554-1J41OFM7RJ_V"
+PAYFAST_STORE_ID    = "22554-1J41OFM7RJ_V"
+
+# ── Secrets (set with wrangler secret put <NAME>) ──────────────────────────────
+# SESSION_SECRET      — long random string used to sign JWTs
+# BREVO_API_KEY       — from brevo.com → SMTP & API → API Keys
+# PAYFAST_SECURED_KEY — from PayFast dashboard
+#
+# REMOVED (no longer needed):
+#   ADMIN_EMAIL           — admin credentials are now stored in the `admins` DB table
+#   ADMIN_PASSWORD_HASH   — passwords are hashed with PBKDF2 and stored in the DB
