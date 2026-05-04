@@ -1,9 +1,4 @@
--- ============================================================
--- KhataBook — D1 Database Schema
--- Run: wrangler d1 execute khata-book-db --file=./schema.sql
--- ============================================================
 
--- Admin sessions (cookie-based auth)
 CREATE TABLE IF NOT EXISTS admin_sessions (
   token      TEXT    PRIMARY KEY,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
