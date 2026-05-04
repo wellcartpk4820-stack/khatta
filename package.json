@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler pages dev public --binding DB=khata-book-db",
-    "build": "tsc && mkdir -p public",
-    "deploy": "wrangler pages deploy public",
+    "dev": "wrangler pages dev ./functions --live-reload",
+    "build": "tsc",
+    "deploy": "wrangler pages deploy ./functions",
     "db:migrate": "wrangler d1 execute khata-book-db --file=./schema.sql",
     "db:migrate:remote": "wrangler d1 execute khata-book-db --remote --file=./schema.sql"
   },
