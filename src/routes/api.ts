@@ -190,7 +190,6 @@ apiRoutes.put('/entries/:id', async c => {
 
   if (!existing) return c.text('Entry not found', 404)
 
-  // Build dynamic UPDATE — allow partial updates (e.g. status-only)
   const fields: string[] = []
   const params: any[]    = []
 
@@ -246,7 +245,6 @@ apiRoutes.delete('/entries/:id', async c => {
 
   if (!entry) return c.text('Entry not found', 404)
 
-  // Delete proof from R2 if one exists
   if (entry.proof_key) {
     try { await c.env.BUCKET.delete(entry.proof_key) } catch {}
   }
@@ -287,11 +285,14 @@ apiRoutes.get('/proof/:entryId', async c => {
    REMINDERS
 ═══════════════════════════════════════════════════════════ */
 
+// Email regex for extracting email from bank_details / notes fields
+const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/
+
 apiRoutes.post('/reminders/send/:entryId', async c => {
   const entryId = parseInt(c.req.param('entryId'))
 
   const entry = await c.env.DB.prepare(`
-    SELECT e.*, p.name AS person_name
+    SELECT e.*, p.name AS person_name, p.bank_details AS person_bank, p.notes AS person_notes
     FROM entries e JOIN persons p ON p.id = e.person_id
     WHERE e.id = ?
   `).bind(entryId).first<any>()
@@ -299,29 +300,37 @@ apiRoutes.post('/reminders/send/:entryId', async c => {
   if (!entry) return c.json({ error: 'Entry not found' }, 404)
 
   if (!c.env.BREVO_API_KEY || !c.env.BREVO_FROM_EMAIL) {
-    return c.json({ error: 'Email not configured' }, 500)
+    return c.json({ error: 'Email not configured. Add BREVO_API_KEY and BREVO_FROM_EMAIL secrets.' }, 500)
+  }
+
+  // Extract email from bank_details or notes — same logic as payment flow
+  let recipientEmail = c.env.BREVO_FROM_EMAIL // fallback: send reminder to admin
+  if (entry.person_bank && EMAIL_REGEX.test(entry.person_bank)) {
+    recipientEmail = entry.person_bank.match(EMAIL_REGEX)![0]
+  } else if (entry.person_notes && EMAIL_REGEX.test(entry.person_notes)) {
+    recipientEmail = entry.person_notes.match(EMAIL_REGEX)![0]
   }
 
   const safeAmount  = Number(entry.amount || 0)
   const safeDueDate = entry.due_date ?? ''
 
   await sendEmail({
-    to: entry.person_mobile || 'admin@example.com',
-    toName: entry.person_name,
+    to:      recipientEmail,
+    toName:  entry.person_name,
     subject: `Reminder — PKR ${formatAmount(safeAmount)} due ${formatDate(safeDueDate)}`,
     html: reminderEmailTemplate({
-      personName: entry.person_name,
-      amount: safeAmount,
-      currency: 'PKR',
-      dueDate: formatDate(safeDueDate),
-      purpose: entry.purpose || '',
+      personName:  entry.person_name,
+      amount:      safeAmount,
+      currency:    'PKR',
+      dueDate:     formatDate(safeDueDate),
+      purpose:     entry.purpose || '',
       paymentLink: null,
-      appName: 'KhataBook',
+      appName:     'KhataBook',
     }),
-    apiKey: c.env.BREVO_API_KEY,
+    apiKey:    c.env.BREVO_API_KEY,
     fromEmail: c.env.BREVO_FROM_EMAIL,
-    fromName: c.env.BREVO_FROM_NAME || 'KhataBook',
+    fromName:  c.env.BREVO_FROM_NAME || 'KhataBook',
   })
 
-  return c.json({ message: 'Reminder sent' })
+  return c.json({ message: `Reminder sent to ${recipientEmail}` })
 })
