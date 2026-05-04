@@ -14,7 +14,7 @@ bucket_name = "khata-proofs"
 [vars]
 ADMIN_EMAIL = "aua4820@gmail.com"
 APP_URL = "https://khatta.pages.dev"
-BREVO_FROM_EMAIL = "aua4820@gmail.com"
+BREVO_FROM_EMAIL = "info@wellcart.pk"
 BREVO_FROM_NAME = "KhataBook"
 PayFast_BASE_URL = "https://ipg1.apps.net.pk"
 PAYFAST_MERCHANT_ID = "22554"
