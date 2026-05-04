@@ -1,0 +1,18 @@
+name = "khatta"
+pages_build_output_dir = "public"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "khata-book-db"
+database_id = "08a06b50-7cd4-4b8e-bfcc-ea8be8bd1918"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "khata-proofs"
+
+[vars]
+APP_URL = "https://khatta.pages.dev"
+BREVO_FROM_NAME = "KhataBook"
+PayFast_BASE_URL = "https://ipg1.apps.net.pk"

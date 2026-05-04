@@ -1,0 +1,20 @@
+{
+  "name": "khatta",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev public --binding DB=khata-book-db",
+    "build": "tsc && mkdir -p public",
+    "deploy": "wrangler pages deploy public",
+    "db:migrate": "wrangler d1 execute khata-book-db --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute khata-book-db --remote --file=./schema.sql"
+  },
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^3.95.0"
+  }
+}
