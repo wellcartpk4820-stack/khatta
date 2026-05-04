@@ -2,10 +2,13 @@
   "name": "khatta",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "wrangler pages dev ./functions --live-reload",
-    "build": "tsc",
+    "dev": "wrangler pages dev ./functions --live-reload --compatibility-date=2025-01-01",
+    "build": "tsc --noEmit",
     "deploy": "wrangler pages deploy ./functions",
+    "deploy:prod": "wrangler pages deploy ./functions --branch=main",
+    "type-check": "tsc --noEmit",
     "db:migrate": "wrangler d1 execute khata-book-db --file=./schema.sql",
     "db:migrate:remote": "wrangler d1 execute khata-book-db --remote --file=./schema.sql"
   },
@@ -16,5 +19,8 @@
     "@cloudflare/workers-types": "^4.20241205.0",
     "typescript": "^5.5.0",
     "wrangler": "^3.95.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
