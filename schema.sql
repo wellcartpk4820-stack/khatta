@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
 
 -- Persons (each has a unique UUID as khata ID)
 CREATE TABLE IF NOT EXISTS persons (
-  id              TEXT PRIMARY KEY,              -- UUID — also the Khata ID
+  id              TEXT PRIMARY KEY,
   name            TEXT NOT NULL,
   identity_number TEXT,                          -- CNIC  e.g. 36302-1234567-9
   father_name     TEXT,
