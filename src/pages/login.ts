@@ -38,7 +38,7 @@ export function loginPage(error?: string): string {
       </div>
 
       <div class="mt-6 text-center">
-        <a href="/" class="text-subtle text-sm hover:text-muted transition-colors">🌐 Public Lookup →</a>
+        <a href="/" class="text-subtle text-sm hover:text-muted transition-colors">🌐 Lookup Khatta Record →</a>
       </div>
     </div>
   </div>`, { title: 'Admin Login' })
