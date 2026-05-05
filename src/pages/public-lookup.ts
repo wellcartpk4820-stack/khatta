@@ -6,7 +6,7 @@ export function publicLookupPage(): string {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>KhataBook — Check Your Record</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Nunito+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +20,17 @@ export function publicLookupPage(): string {
     .btn-gold { background:linear-gradient(135deg,#c9a84c,#8a6520); color:#050b18; }
     .btn-gold:hover { background:linear-gradient(135deg,#e8cc7e,#c9a84c); transform:translateY(-1px); box-shadow:0 6px 20px rgba(201,168,76,.3); }
     .card { background:#0d1627; border:1px solid #1e3a5f; border-radius:14px; }
-    .badge { display:inline-block; padding:3px 12px; border-radius:99px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    .badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 99px; 
+      font-size: 12px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      letter-spacing: .05em; 
+      white-space: nowrap;
+      line-height: 1.4;
+    }
     .badge-lent     { background:rgba(34,197,94,.12);  color:#22c55e; border:1px solid rgba(34,197,94,.3); }
     .badge-borrowed { background:rgba(239,68,68,.12);  color:#f87171; border:1px solid rgba(239,68,68,.3); }
     .badge-pending  { background:rgba(234,179,8,.12);  color:#fbbf24; border:1px solid rgba(234,179,8,.3); }
@@ -29,28 +39,125 @@ export function publicLookupPage(): string {
     .badge-received { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(59,130,246,.3); }
     .badge-partial  { background:rgba(251,146,60,.12); color:#fb923c; border:1px solid rgba(251,146,60,.3); }
     .badge-cancelled{ background:rgba(107,114,128,.12);color:#9ca3af; border:1px solid rgba(107,114,128,.3); }
-    .amt { font-family:'JetBrains Mono',monospace; font-weight:600; }
+    .amt { font-family:'JetBrains Mono',monospace; font-weight:600; white-space: nowrap; }
     .amt-lent     { color:#22c55e; }
     .amt-borrowed { color:#f87171; }
-    .data-table { width:100%; border-collapse:collapse; }
-    .data-table th { color:#c9a84c; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; padding:12px 16px; text-align:left; border-bottom:1px solid #1e3a5f; }
-    .data-table td { padding:14px 16px; border-bottom:1px solid rgba(30,58,95,.4); font-size:14px; vertical-align:middle; }
-    .data-table tr:last-child td { border-bottom:none; }
+    
+    /* KEY FIX: Table wrapper with horizontal scroll */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      position: relative;
+    }
+    
+    .table-wrapper::-webkit-scrollbar {
+      height: 8px;
+      background: #1e3a5f;
+      border-radius: 4px;
+    }
+    
+    .table-wrapper::-webkit-scrollbar-track {
+      background: #1e3a5f;
+      border-radius: 4px;
+    }
+    
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: #c9a84c;
+      border-radius: 4px;
+    }
+    
+    /* Fixed table - prevents ANY text wrapping or breaking */
+    .data-table {
+      width: 100%;
+      min-width: 1100px;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+    
+    /* ALL columns now have consistent white-space handling */
+    .data-table th,
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(30,58,95,.4);
+      font-size: 14px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    
+    /* Except Purpose column which can wrap but with proper styling */
+    .data-table td.purpose-col {
+      white-space: normal;
+      max-width: 200px;
+      min-width: 120px;
+    }
+    
+    .data-table td.purpose-col span {
+      display: inline-block;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    
+    /* Override for amount and badge containers */
+    .data-table td .badge,
+    .data-table td .amt {
+      white-space: nowrap;
+    }
+    
+    .data-table th {
+      color: #c9a84c;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      border-bottom: 1px solid #1e3a5f;
+      white-space: nowrap;
+    }
+    
+    .data-table tr:last-child td { border-bottom: none; }
     .data-table tbody tr:hover td { background:rgba(22,32,53,.6); }
+    
     @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
     .animate-up { animation:fadeUp .4s ease forwards; }
     @keyframes spin { to{transform:rotate(360deg)} }
     .spinner { width:20px; height:20px; border:2px solid rgba(201,168,76,.3); border-top-color:#c9a84c; border-radius:50%; animation:spin .7s linear infinite; }
-    @media(max-width:640px){
-      .data-table th,.data-table td { padding:10px 12px; font-size:13px; }
-      .hide-sm { display:none !important; }
+    
+    /* Responsive adjustments */
+    @media(max-width: 768px) {
+      .data-table {
+        min-width: 900px;
+      }
+      .data-table th,
+      .data-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+      .data-table td.purpose-col {
+        max-width: 150px;
+        min-width: 100px;
+      }
+      .data-table td.purpose-col span {
+        max-width: 130px;
+      }
+      .badge {
+        font-size: 10px;
+        padding: 3px 8px;
+      }
     }
+    
     @media print {
       body { background:#fff !important; color:#111 !important; }
       .no-print { display:none !important; }
       .card { background:#fff !important; border-color:#ddd !important; }
       .amt-lent { color:#16a34a !important; }
       .amt-borrowed { color:#dc2626 !important; }
+      .table-wrapper { overflow: visible !important; }
+      .data-table { min-width: auto !important; }
       @page { margin:15mm; size:A4; }
     }
   </style>
@@ -101,15 +208,13 @@ export function publicLookupPage(): string {
 </div>
 
 <!-- Purpose Popup Modal -->
-<div id="purpose-modal" onclick="closePurposeModal()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,11,24,.95);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);">
-  <div onclick="event.stopPropagation()" style="background:#0d1627;border:1px solid #c9a84c;border-radius:20px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #1e3a5f;">
-      <h3 style="font-family:'Cormorant Garamond',serif;color:#c9a84c;font-size:22px;margin:0;font-weight:600;">📝 Purpose / Details</h3>
-      <button onclick="closePurposeModal()" style="background:#1e3a5f;border:none;color:#c9a84c;font-size:20px;cursor:pointer;padding:8px 14px;border-radius:10px;transition:all 0.2s;">✕ Close</button>
+<div id="purpose-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(5,11,24,.88);z-index:999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(5px);">
+  <div onclick="event.stopPropagation()" style="background:#0d1627;border:1px solid #1e3a5f;border-radius:14px;width:100%;max-width:480px;padding:28px;position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-family:'Cormorant Garamond',serif;color:#c9a84c;font-size:20px;margin:0;">Purpose / Details</h3>
+      <button onclick="document.getElementById('purpose-modal').style.display='none'" style="background:none;border:none;color:#7a92b5;font-size:22px;cursor:pointer;line-height:1;">✕</button>
     </div>
-    <div style="padding:24px;">
-      <p id="purpose-text" style="color:#dde3f0;font-size:16px;line-height:1.7;white-space:pre-wrap;margin:0;word-break:break-word;"></p>
-    </div>
+    <p id="purpose-text" style="color:#dde3f0;font-size:15px;line-height:1.7;white-space:pre-wrap;margin:0;"></p>
   </div>
 </div>
 
@@ -147,25 +252,8 @@ async function doSearch(){
 }
 
 function showPurpose(text){
-  const modal = document.getElementById('purpose-modal')
-  const purposeText = document.getElementById('purpose-text')
-  if(modal && purposeText){
-    // Clean the text - remove any HTML entities or extra quotes
-    let cleanText = text || 'No additional details provided.'
-    // Decode HTML entities if any
-    const textarea = document.createElement('textarea')
-    textarea.innerHTML = cleanText
-    cleanText = textarea.value
-    purposeText.textContent = cleanText
-    modal.style.display = 'flex'
-  }
-}
-
-function closePurposeModal(){
-  const modal = document.getElementById('purpose-modal')
-  if(modal){
-    modal.style.display = 'none'
-  }
+  document.getElementById('purpose-text').textContent = text
+  document.getElementById('purpose-modal').style.display = 'flex'
 }
 
 function showError(msg){
@@ -186,26 +274,23 @@ function renderResults(d){
   const rows = entries.map(e => {
     const overdue = e.due_date && new Date(e.due_date) < new Date() && ['pending','partial'].includes(e.status)
     const payBtn = (e.type === 'lent' && ['pending','partial'].includes(e.status))
-      ? \`<button onclick="payEntry(\${e.id},\${e.amount},'PKR')" style="background:linear-gradient(135deg,#c9a84c,#8a6520);color:#050b18;font-weight:700;font-size:11px;padding:5px 12px;border:none;border-radius:6px;cursor:pointer;">💳 Pay</button>\`
+      ? \`<button onclick="payEntry(\${e.id},\${e.amount},'PKR')" style="background:linear-gradient(135deg,#c9a84c,#8a6520);color:#050b18;font-weight:700;font-size:11px;padding:5px 12px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">💳 Pay</button>\`
       : ''
     
-    // Create a safe purpose display and click handler
-    const hasPurpose = e.purpose && e.purpose.trim().length > 0
-    const purposeDisplay = hasPurpose ? 
-      \`<span onclick='showPurpose(\`\${e.purpose.replace(/`/g, '\\\\`').replace(/\\$/g, '\\\\$')}\`)' style="color:#c9a84c;cursor:pointer;text-decoration:underline dotted;max-width:150px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;" title="Click to view full purpose">\${e.purpose.length > 40 ? e.purpose.substring(0, 40) + '...' : e.purpose}</span>\` : 
-      '<span style="color:#455a77">—</span>'
+    // Clean single-line type text
+    const typeText = e.type === 'lent' ? '↑ Lent (Owned to Admin)' : '↓ Borrowed (Admin Received)'
     
     return \`
     <tr>
-      <td style="color:#455a77;font-family:'JetBrains Mono',monospace;font-size:11px;">#\${e.id}</td>
-      <td><span class="badge badge-\${e.type}">\${e.type==='lent'?'↑ Lent (owed to admin)':'↓ Borrowed (admin received)'}</span></td>
-      <td class="amt amt-\${e.type}">PKR \${fmt(e.amount)}</td>
-      <td style="color:#7a92b5;font-size:13px;" class="hide-sm">\${e.payment_mode||'—'}</td>
-      <td style="color:#7a92b5;font-size:13px;">\${fmtDate(e.entry_date)}</td>
-      <td style="font-size:13px;">\${e.due_date ? \`<span style="color:\${overdue?'#f87171':'#7a92b5'}">\${fmtDate(e.due_date)}\${overdue?' ⚠':''}</span>\` : '<span style="color:#455a77">—</span>'}</td>
-      <td style="font-size:13px;" class="hide-sm">\${purposeDisplay}</td>
-      <td><span class="badge badge-\${e.status}">\${e.status}</span></td>
-      <td>\${payBtn}</td>
+      <td style="color:#455a77;font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;">#\${e.id}</td>
+      <td style="white-space:nowrap;"><span class="badge badge-\${e.type}">\${typeText}</span></td>
+      <td style="white-space:nowrap;"><span class="amt amt-\${e.type}">PKR \${fmt(e.amount)}</span></td>
+      <td style="color:#7a92b5;font-size:13px;white-space:nowrap;">\${e.payment_mode || '—'}</td>
+      <td style="color:#7a92b5;font-size:13px;white-space:nowrap;">\${fmtDate(e.entry_date)}</td>
+      <td style="font-size:13px;white-space:nowrap;">\${e.due_date ? \`<span style="color:\${overdue?'#f87171':'#7a92b5'};">\${fmtDate(e.due_date)}\${overdue?' ⚠':''}</span>\` : '<span style="color:#455a77">—</span>'}</td>
+      <td class="purpose-col">\${e.purpose ? \`<span onclick="showPurpose(\${JSON.stringify(e.purpose)})" style="color:#c9a84c;cursor:pointer;text-decoration:underline dotted;" title="Click to view full details">\${e.purpose}</span>\` : '<span style="color:#455a77">—</span>'}</td>
+      <td style="white-space:nowrap;"><span class="badge badge-\${e.status}">\${e.status}</span></td>
+      <td style="white-space:nowrap;">\${payBtn}</td>
     </tr>\`
   }).join('')
 
@@ -244,17 +329,24 @@ function renderResults(d){
       \${net>0 ? \`<button onclick="payAll(\${net})" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">💳 Pay All (PKR \${fmt(net)})</button>\` : ''}
     </div>
 
-    <!-- Entries Table -->
-    <div class="card" style="overflow:hidden;">
+    <!-- Entries Table with Horizontal Scroll Container - FIXED for ALL columns -->
+    <div class="card">
       <div style="padding:14px 20px;border-bottom:1px solid #1e3a5f;font-weight:700;">
         Ledger Entries \${entries.length===0?'<span style="color:#7a92b5;font-size:13px;font-weight:400;">(none yet)</span>':''}
       </div>
-      <div style="overflow-x:auto;">
+      <div class="table-wrapper">
         <table class="data-table">
           <thead>
             <tr>
-              <th>#</th><th>Type</th><th>Amount (PKR)</th><th class="hide-sm">Mode</th>
-              <th>Date</th><th>Due</th><th class="hide-sm">Purpose</th><th>Status</th><th></th>
+              <th>#</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Mode</th>
+              <th>Date</th>
+              <th>Due Date</th>
+              <th>Purpose</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>\${rows || '<tr><td colspan="9" style="text-align:center;color:#7a92b5;padding:32px;">No entries found.</td></tr>'}</tbody>
@@ -296,17 +388,8 @@ function toast(msg, ok=true){
   setTimeout(()=>d.remove(),3000)
 }
 
-// Close modal when clicking ESC key
-document.addEventListener('keydown', function(e) {
-  if(e.key === 'Escape') {
-    closePurposeModal()
-  }
-  if(e.key === 'Enter') {
-    doSearch()
-  }
-})
-
-// Click outside modal to close (already handled by onclick on backdrop)
+// Allow search on Enter key
+document.addEventListener('keydown', e => { if(e.key==='Enter') doSearch() })
 </script>
 </body>
 </html>`
