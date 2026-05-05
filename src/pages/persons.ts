@@ -35,10 +35,10 @@ export function personsPage(persons: PersonWithSummary[], query = ''): string {
             <tr>
               <th>Name</th>
               <th>CNIC</th>
-              <th>Father Name</th>
+              <th>S/D/W/O</th>
               <th>Mobile</th>
-              <th>Lent</th>
-              <th>Borrowed</th>
+              <th>Lent (PKR)</th>
+              <th>Borrowed (PKR)</th>
               <th>Net</th>
               <th>Entries</th>
               <th class="no-print"></th>
