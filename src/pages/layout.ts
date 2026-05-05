@@ -14,23 +14,18 @@ export function layout(content: string, opts: LayoutOpts = {}): string {
   const fullTitle = `${title} — KhataBook`
 
   const adminNav = admin ? `
-  <!-- ══ Sidebar ══════════════════════════════════════════════════ -->
-  <div id="sidebar-overlay" class="sidebar-overlay no-print" onclick="closeSidebar()"></div>
-  <div id="sidebar" class="sidebar fixed left-0 top-0 h-full flex flex-col no-print z-40">
-    <div class="px-6 py-6 border-b border-navy-border" style="border-color:#1e3a5f;">
-      <div class="flex items-center justify-between">
-        <a href="/admin" class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-lg bg-gold flex items-center justify-center text-navy font-bold text-lg">📒</div>
-          <div>
-            <div class="font-serif text-lg text-gold leading-tight">KhataBook</div>
-            <div class="text-[10px] text-subtle uppercase tracking-widest">Admin Panel</div>
-          </div>
-        </a>
-        <!-- Close button — mobile only -->
-        <button id="sidebar-close-btn" onclick="closeSidebar()"
-          class="sidebar-close-btn text-muted hover:text-white text-2xl leading-none transition-colors"
-          aria-label="Close menu">✕</button>
-      </div>
+  <div class="sidebar fixed left-0 top-0 h-full flex flex-col no-print z-30 transition-all duration-300" style="width: 240px;">
+    <button id="sidebarToggleBtn" class="absolute -right-3 top-20 bg-navy-elevated border border-navy-border rounded-full w-6 h-6 flex items-center justify-center text-gold hover:bg-gold/20 transition-all z-40 cursor-pointer hover:scale-110">
+      ◀
+    </button>
+    <div class="px-6 py-6 border-b border-navy-border sidebar-header">
+      <a href="/admin" class="flex items-center gap-3 sidebar-logo">
+        <div class="w-9 h-9 rounded-lg bg-gold flex items-center justify-center text-navy font-bold text-lg flex-shrink-0">📒</div>
+        <div class="sidebar-title">
+          <div class="font-serif text-lg text-gold leading-tight">KhataBook</div>
+          <div class="text-[10px] text-subtle uppercase tracking-widest">Admin Panel</div>
+        </div>
+      </a>
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
       ${navLink('/admin',           '📊', 'Dashboard',   activeNav === 'dashboard')}
@@ -38,18 +33,18 @@ export function layout(content: string, opts: LayoutOpts = {}): string {
       ${navLink('/admin/entries',   '📋', 'All Entries', activeNav === 'entries')}
       ${navLink('/admin/reminders', '🔔', 'Reminders',   activeNav === 'reminders')}
     </nav>
-    <div class="px-3 py-4 border-t" style="border-color:#1e3a5f;">
+    <div class="px-3 py-4 border-t border-navy-border">
       ${navLink('/', '🌐', 'Public Lookup', false)}
       <form action="/logout" method="POST" class="mt-1">
         <button type="submit" class="nav-item w-full text-left text-red-400 hover:text-red-300 hover:bg-red-500/10">
-          <span>🚪</span> Logout
+          <span>🚪</span> <span class="nav-text">Logout</span>
         </button>
       </form>
     </div>
   </div>
   ` : ''
 
-  const mainClass = admin ? 'main-content min-h-screen' : 'min-h-screen'
+  const mainClass = admin ? 'main-content ml-60 transition-all duration-300 min-h-screen' : 'min-h-screen'
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -83,87 +78,24 @@ export function layout(content: string, opts: LayoutOpts = {}): string {
     body { background: #050b18; color: #dde3f0; font-family: 'Nunito Sans', sans-serif; font-size: 15px; line-height: 1.6; }
 
     /* ── Sidebar ── */
-    .sidebar {
-      background: #0a1220;
-      border-right: 1px solid #1e3a5f;
-      width: 240px;
-      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform;
-    }
-
-    /* Desktop: always visible, push content */
-    @media (min-width: 769px) {
-      .sidebar { transform: translateX(0) !important; }
-      .main-content { margin-left: 240px; }
-      .sidebar-close-btn { display: none !important; }
-      .sidebar-overlay { display: none !important; }
-      .mobile-topbar { display: none !important; }
-    }
-
-    /* Mobile: hidden by default, slides in on toggle */
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-        z-index: 50;
-      }
-      .sidebar.open {
-        transform: translateX(0);
-        box-shadow: 4px 0 30px rgba(0,0,0,0.6);
-      }
-      .main-content { margin-left: 0 !important; }
-    }
-
-    /* Overlay backdrop */
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(5, 11, 24, 0.75);
-      z-index: 45;
-      backdrop-filter: blur(3px);
-      opacity: 0;
-      transition: opacity 0.28s ease;
-    }
-    .sidebar-overlay.open {
-      display: block;
-      opacity: 1;
-    }
-
-    /* ── Mobile Top Bar ── */
-    .mobile-topbar {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 30;
-      background: #0a1220;
-      border-bottom: 1px solid #1e3a5f;
-      padding: 0 16px;
-      height: 56px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    @media (max-width: 768px) {
-      .mobile-topbar { display: flex; }
-      .mobile-topbar-spacer { height: 56px; }
-    }
-
-    /* Hamburger icon animation */
-    .hamburger { display:flex;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border-radius:6px;transition:background .2s; border:none; background:transparent; }
-    .hamburger:hover { background: rgba(201,168,76,0.1); }
-    .hamburger span {
-      display: block; width: 22px; height: 2px;
-      background: #c9a84c; border-radius: 2px;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      transform-origin: center;
-    }
-    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-    /* ── Nav items ── */
-    .nav-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:8px; font-size:14px; font-weight:600; color:#7a92b5; transition:all .18s; cursor:pointer; text-decoration:none; border:1px solid transparent; }
+    .sidebar { background: #0a1220; border-right: 1px solid #1e3a5f; overflow-x: hidden; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:8px; font-size:14px; font-weight:600; color:#7a92b5; transition:all .18s; cursor:pointer; text-decoration:none; white-space: nowrap; }
     .nav-item:hover { background:#162035; color:#dde3f0; }
-    .nav-item.active { background:rgba(201,168,76,0.12); color:#c9a84c; border-color:rgba(201,168,76,0.2); }
+    .nav-item.active { background:rgba(201,168,76,0.12); color:#c9a84c; border:1px solid rgba(201,168,76,0.2); }
+    .nav-text { transition: opacity 0.2s; }
+    
+    /* Collapsed sidebar styles */
+    .sidebar.collapsed { width: 70px !important; }
+    .sidebar.collapsed .sidebar-header { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+    .sidebar.collapsed .sidebar-title { display: none; }
+    .sidebar.collapsed .nav-item { justify-content: center; padding: 9px 10px; gap: 0; }
+    .sidebar.collapsed .nav-item span:first-child { margin-right: 0; font-size: 1.25rem; }
+    .sidebar.collapsed .nav-text { display: none; }
+    .sidebar.collapsed .sidebar-logo { justify-content: center; }
+    .sidebar.collapsed .flex.items-center.gap-3 { gap: 0 !important; }
+    
+    /* Main content adjustment */
+    .main-content.collapsed { margin-left: 70px !important; }
 
     /* ── Cards ── */
     .card { background:#0d1627; border:1px solid #1e3a5f; border-radius:12px; }
@@ -247,8 +179,10 @@ export function layout(content: string, opts: LayoutOpts = {}): string {
     ::-webkit-scrollbar-thumb { background:#1e3a5f; border-radius:3px; }
     ::-webkit-scrollbar-thumb:hover { background:#c9a84c; }
 
-    /* ── Mobile responsive ── */
+    /* ── Mobile ── */
     @media(max-width:768px){
+      .sidebar { display:none; }
+      .ml-60, .main-content.collapsed { margin-left:0 !important; }
       .data-table th, .data-table td { padding:10px 12px; font-size:13px; }
       .hide-mobile { display:none !important; }
     }
@@ -264,103 +198,98 @@ export function layout(content: string, opts: LayoutOpts = {}): string {
       .amt-borrowed { color:#dc2626 !important; }
       .badge-lent   { color:#16a34a !important; border-color:#16a34a !important; background:transparent !important; }
       .badge-borrowed { color:#dc2626 !important; border-color:#dc2626 !important; background:transparent !important; }
-      .sidebar, .mobile-topbar, .sidebar-overlay { display:none !important; }
-      .main-content { margin-left:0 !important; }
+      .sidebar { display:none !important; }
+      .ml-60, .main-content.collapsed { margin-left:0 !important; }
       @page { margin: 15mm; size: A4; }
     }
   </style>
   ${extraHead}
 </head>
 <body>
-
 ${adminNav}
-
-${admin ? `
-<!-- ── Mobile Top Bar ─────────────────────────────────────── -->
-<div class="mobile-topbar no-print">
-  <button id="hamburger-btn" class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <a href="/admin" class="flex items-center gap-2 font-serif text-gold" style="font-size:20px;text-decoration:none;">
-    📒 KhataBook
-  </a>
-  <div style="width:34px;"></div><!-- spacer to center title -->
-</div>
-<div class="mobile-topbar-spacer no-print"></div>
-` : ''}
-
 <div class="${mainClass}">
+  ${admin ? mobileSidebarToggle() : ''}
   <div id="toast"></div>
   ${content}
 </div>
-
 ${scripts}
-
 <script>
-/* ── Sidebar toggle ── */
-function toggleSidebar() {
-  const sidebar  = document.getElementById('sidebar')
-  const overlay  = document.getElementById('sidebar-overlay')
-  const hamburger = document.getElementById('hamburger-btn')
-  if (!sidebar) return
-  const isOpen = sidebar.classList.contains('open')
-  if (isOpen) {
-    closeSidebar()
-  } else {
-    sidebar.classList.add('open')
-    if (overlay)  overlay.classList.add('open')
-    if (hamburger) hamburger.classList.add('active')
-    document.body.style.overflow = 'hidden'
-  }
-}
-
-function closeSidebar() {
-  const sidebar   = document.getElementById('sidebar')
-  const overlay   = document.getElementById('sidebar-overlay')
-  const hamburger = document.getElementById('hamburger-btn')
-  if (!sidebar) return
-  sidebar.classList.remove('open')
-  if (overlay)  overlay.classList.remove('open')
-  if (hamburger) hamburger.classList.remove('active')
-  document.body.style.overflow = ''
-}
-
-/* Close sidebar on Escape key */
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSidebar()
-})
-
-/* Close sidebar when a nav link is tapped on mobile */
-document.querySelectorAll('#sidebar .nav-item').forEach(function(link) {
-  link.addEventListener('click', function() {
-    if (window.innerWidth <= 768) closeSidebar()
-  })
-})
-
-/* ── Toast helper ── */
-function toast(msg, ok){
-  if(ok===undefined) ok=true;
-  var el=document.createElement('div');
+function toast(msg, ok=true){
+  const el=document.createElement('div');
   el.className='toast '+(ok?'toast-ok':'toast-err');
   el.textContent=msg;
   document.getElementById('toast').appendChild(el);
-  setTimeout(function(){el.remove();}, 3500);
+  setTimeout(()=>el.remove(), 3500);
 }
-
-/* ── Delete helper ── */
 async function del(url, confirmMsg){
   if(!confirm(confirmMsg||'Are you sure?')) return;
-  var r=await fetch(url,{method:'DELETE'});
-  if(r.ok){ toast('Deleted successfully'); setTimeout(function(){location.reload();},800); }
-  else { toast('Delete failed', false); }
+  const r=await fetch(url,{method:'DELETE'});
+  if(r.ok){ toast('Deleted successfully'); setTimeout(()=>location.reload(),800); }
+  else { toast('Delete failed','err'); }
 }
+
+// Sidebar toggle functionality
+(function() {
+  const sidebar = document.querySelector('.sidebar');
+  const mainContent = document.querySelector('.main-content');
+  const toggleBtn = document.getElementById('sidebarToggleBtn');
+  
+  if (sidebar && mainContent && toggleBtn) {
+    // Load saved state
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    
+    function updateSidebarState(collapsed) {
+      if (collapsed) {
+        sidebar.classList.add('collapsed');
+        mainContent.classList.add('collapsed');
+        toggleBtn.innerHTML = '▶';
+        localStorage.setItem('sidebarCollapsed', 'true');
+      } else {
+        sidebar.classList.remove('collapsed');
+        mainContent.classList.remove('collapsed');
+        toggleBtn.innerHTML = '◀';
+        localStorage.setItem('sidebarCollapsed', 'false');
+      }
+    }
+    
+    // Apply saved state on load
+    updateSidebarState(isCollapsed);
+    
+    // Toggle on click
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isNowCollapsed = sidebar.classList.contains('collapsed');
+      updateSidebarState(!isNowCollapsed);
+    });
+  }
+})();
 </script>
 </body>
 </html>`
 }
 
 function navLink(href: string, icon: string, label: string, active: boolean): string {
-  return `<a href="${href}" class="nav-item${active ? ' active' : ''}"><span>${icon}</span> ${label}</a>`
+  return `<a href="${href}" class="nav-item${active ? ' active' : ''}"><span>${icon}</span> <span class="nav-text">${label}</span></a>`
+}
+
+function mobileSidebarToggle(): string {
+  return `
+  <div class="md:hidden no-print fixed top-0 left-0 right-0 z-20 bg-navy-card border-b border-navy-border px-4 py-3 flex items-center justify-between" style="background:#0a1220;border-color:#1e3a5f;">
+    <a href="/admin" class="flex items-center gap-2 font-serif text-gold text-lg">📒 KhataBook</a>
+    <button onclick="document.getElementById('mob-menu').classList.toggle('hidden')" class="text-muted text-2xl">☰</button>
+  </div>
+  <div id="mob-menu" class="hidden md:hidden fixed inset-0 z-50 bg-navy pt-14" style="background:#0a1220;">
+    <nav class="px-4 py-4 space-y-1">
+      <a href="/admin"           class="nav-item block">📊 Dashboard</a>
+      <a href="/admin/persons"   class="nav-item block">👥 Persons</a>
+      <a href="/admin/entries"   class="nav-item block">📋 All Entries</a>
+      <a href="/admin/reminders" class="nav-item block">🔔 Reminders</a>
+      <a href="/"                class="nav-item block">🌐 Public Lookup</a>
+      <form action="/logout" method="POST">
+        <button type="submit" class="nav-item w-full text-left text-red-400">🚪 Logout</button>
+      </form>
+      <button onclick="document.getElementById('mob-menu').classList.add('hidden')" class="nav-item text-muted">✕ Close</button>
+    </nav>
+  </div>
+  <div class="md:hidden h-14"></div>`
 }
