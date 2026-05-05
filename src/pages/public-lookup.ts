@@ -87,27 +87,28 @@ export function publicLookupPage(): string {
         <input type="text" id="s-father" class="input" placeholder="Father's Name">
         <input type="text" id="s-cnic"   class="input" placeholder="CNIC (e.g. 36302-1234567-9)">
       </div>
-      <div class="flex gap-3">
-        <input type="text" id="s-khata"  class="input" placeholder="Khata ID / Entry # (optional)">
-        <button onclick="doSearch()" class="btn btn-gold whitespace-nowrap">🔍 Search</button>
+      <div>
+        <input type="text" id="s-khata" class="input" placeholder="Khata ID / Entry # (optional)">
       </div>
-      <!-- Date filter -->
-      <div class="flex flex-wrap gap-3 items-end pt-1">
-        <div>
-          <label style="font-size:11px;color:#7a92b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:4px;">From Date</label>
-          <input type="date" id="s-from" class="input" style="width:160px;">
-        </div>
-        <div>
-          <label style="font-size:11px;color:#7a92b5;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:4px;">To Date</label>
-          <input type="date" id="s-to"   class="input" style="width:160px;">
-        </div>
-        <div style="color:#455a77;font-size:12px;padding-bottom:14px;">Leave blank to see all dates</div>
+      <div>
+        <button onclick="doSearch()" class="btn btn-gold w-full justify-center" style="padding:13px;">🔍 Search</button>
       </div>
     </div>
   </div>
 
   <!-- Results -->
   <div id="results"></div>
+</div>
+
+<!-- Purpose Popup Modal -->
+<div id="purpose-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(5,11,24,.88);z-index:999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(5px);">
+  <div onclick="event.stopPropagation()" style="background:#0d1627;border:1px solid #1e3a5f;border-radius:14px;width:100%;max-width:480px;padding:28px;position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-family:'Cormorant Garamond',serif;color:#c9a84c;font-size:20px;margin:0;">Purpose / Details</h3>
+      <button onclick="document.getElementById('purpose-modal').style.display='none'" style="background:none;border:none;color:#7a92b5;font-size:22px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <p id="purpose-text" style="color:#dde3f0;font-size:15px;line-height:1.7;white-space:pre-wrap;margin:0;"></p>
+  </div>
 </div>
 
 <!-- Print footer -->
@@ -123,8 +124,6 @@ async function doSearch(){
   const father = document.getElementById('s-father').value.trim()
   const cnic   = document.getElementById('s-cnic').value.trim()
   const khata  = document.getElementById('s-khata').value.trim()
-  const from   = document.getElementById('s-from').value
-  const to     = document.getElementById('s-to').value
 
   if(!name && !father && !cnic && !khata){
     showError('Please enter at least one search field.')
@@ -138,13 +137,16 @@ async function doSearch(){
   if(father) params.set('father', father)
   if(cnic)   params.set('cnic', cnic)
   if(khata)  params.set('khata', khata)
-  if(from)   params.set('from', from)
-  if(to)     params.set('to', to)
 
   const r = await fetch('/api/public/lookup?' + params.toString())
   const d = await r.json()
   if(!r.ok) { showError(d.error || 'No records found.'); return }
   renderResults(d)
+}
+
+function showPurpose(text){
+  document.getElementById('purpose-text').textContent = text
+  document.getElementById('purpose-modal').style.display = 'flex'
 }
 
 function showError(msg){
@@ -175,7 +177,7 @@ function renderResults(d){
       <td style="color:#7a92b5;font-size:13px;" class="hide-sm">\${e.payment_mode||'—'}</td>
       <td style="color:#7a92b5;font-size:13px;">\${fmtDate(e.entry_date)}</td>
       <td style="font-size:13px;">\${e.due_date ? \`<span style="color:\${overdue?'#f87171':'#7a92b5'}">\${fmtDate(e.due_date)}\${overdue?' ⚠':''}</span>\` : '<span style="color:#455a77">—</span>'}</td>
-      <td style="color:#7a92b5;font-size:13px;" class="hide-sm">\${e.purpose||'<span style="color:#455a77">—</span>'}</td>
+      <td style="font-size:13px;" class="hide-sm">\${e.purpose ? \`<span onclick="showPurpose(\${JSON.stringify(e.purpose)})" style="color:#c9a84c;cursor:pointer;text-decoration:underline dotted;max-width:120px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;" title="Click to view">\${e.purpose}</span>\` : '<span style="color:#455a77">—</span>'}</td>
       <td><span class="badge badge-\${e.status}">\${e.status}</span></td>
       <td>\${payBtn}</td>
     </tr>\`
