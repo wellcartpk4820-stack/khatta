@@ -113,7 +113,7 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
                 <td><span class="badge badge-${e.type}">${e.type === 'lent' ? '↑ Lent' : '↓ Borrowed'}</span></td>
                 <td class="amt amt-${e.type}">PKR ${formatAmount(e.amount)}</td>
                 <td class="text-muted text-sm">${escapeHtml(e.payment_mode)}</td>
-                <td class="text-muted text-sm">${formatDateTime(e.entry_date)}</td>
+                <td class="text-muted text-sm">${formatDate(e.entry_date)}</td>
                 <td class="text-sm">
                   ${e.due_date
                     ? `<span class="${overdue ? 'text-red-400 font-bold' : 'text-muted'}">${formatDate(e.due_date)}${overdue ? ' ⚠' : ''}</span>`
@@ -193,8 +193,8 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
             </select>
           </div>
           <div>
-            <label>Date & Time *</label>
-            <input type="datetime-local" name="entry_date" class="input" required>
+            <label>Date *</label>
+            <input type="date" name="entry_date" class="input" required>
           </div>
           <div>
             <label>Due Date</label>
@@ -262,8 +262,8 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
             </select>
           </div>
           <div>
-            <label>Date & Time</label>
-            <input type="datetime-local" id="ee-date" class="input">
+            <label>Date</label>
+            <input type="date" id="ee-date" class="input">
           </div>
           <div>
             <label>Due Date</label>
@@ -304,7 +304,7 @@ function openModal(id)  { document.getElementById(id).classList.add('open') }
 function closeModal(id) { document.getElementById(id).classList.remove('open') }
 
 // Set default datetime to now
-document.querySelector('[name="entry_date"]').value = new Date().toISOString().slice(0,16)
+document.querySelector('[name="entry_date"]').value = new Date().toISOString().slice(0,10)
 
 // ── Add Entry ──
 document.getElementById('add-entry-form').addEventListener('submit', async e => {
