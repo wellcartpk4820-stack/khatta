@@ -178,8 +178,8 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
           <div>
             <label>Type *</label>
             <select name="type" class="input" required>
-              <option value="lent">↑ Lent (I gave money)</option>
-              <option value="borrowed">↓ Borrowed (I received money)</option>
+              <option value="lent">↑ Lent </option>
+              <option value="borrowed">↓ Borrowed</option>
             </select>
           </div>
           <div>
