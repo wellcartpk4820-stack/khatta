@@ -101,13 +101,15 @@ export function publicLookupPage(): string {
 </div>
 
 <!-- Purpose Popup Modal -->
-<div id="purpose-modal" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(5,11,24,.88);z-index:999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(5px);">
-  <div onclick="event.stopPropagation()" style="background:#0d1627;border:1px solid #1e3a5f;border-radius:14px;width:100%;max-width:480px;padding:28px;position:relative;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <h3 style="font-family:'Cormorant Garamond',serif;color:#c9a84c;font-size:20px;margin:0;">Purpose / Details</h3>
-      <button onclick="document.getElementById('purpose-modal').style.display='none'" style="background:none;border:none;color:#7a92b5;font-size:22px;cursor:pointer;line-height:1;">✕</button>
+<div id="purpose-modal" onclick="closePurposeModal()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,11,24,.95);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);">
+  <div onclick="event.stopPropagation()" style="background:#0d1627;border:1px solid #c9a84c;border-radius:20px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #1e3a5f;">
+      <h3 style="font-family:'Cormorant Garamond',serif;color:#c9a84c;font-size:22px;margin:0;font-weight:600;">📝 Purpose / Details</h3>
+      <button onclick="closePurposeModal()" style="background:#1e3a5f;border:none;color:#c9a84c;font-size:20px;cursor:pointer;padding:8px 14px;border-radius:10px;transition:all 0.2s;">✕ Close</button>
     </div>
-    <p id="purpose-text" style="color:#dde3f0;font-size:15px;line-height:1.7;white-space:pre-wrap;margin:0;"></p>
+    <div style="padding:24px;">
+      <p id="purpose-text" style="color:#dde3f0;font-size:16px;line-height:1.7;white-space:pre-wrap;margin:0;word-break:break-word;"></p>
+    </div>
   </div>
 </div>
 
@@ -145,8 +147,25 @@ async function doSearch(){
 }
 
 function showPurpose(text){
-  document.getElementById('purpose-text').textContent = text
-  document.getElementById('purpose-modal').style.display = 'flex'
+  const modal = document.getElementById('purpose-modal')
+  const purposeText = document.getElementById('purpose-text')
+  if(modal && purposeText){
+    // Clean the text - remove any HTML entities or extra quotes
+    let cleanText = text || 'No additional details provided.'
+    // Decode HTML entities if any
+    const textarea = document.createElement('textarea')
+    textarea.innerHTML = cleanText
+    cleanText = textarea.value
+    purposeText.textContent = cleanText
+    modal.style.display = 'flex'
+  }
+}
+
+function closePurposeModal(){
+  const modal = document.getElementById('purpose-modal')
+  if(modal){
+    modal.style.display = 'none'
+  }
 }
 
 function showError(msg){
@@ -169,6 +188,13 @@ function renderResults(d){
     const payBtn = (e.type === 'lent' && ['pending','partial'].includes(e.status))
       ? \`<button onclick="payEntry(\${e.id},\${e.amount},'PKR')" style="background:linear-gradient(135deg,#c9a84c,#8a6520);color:#050b18;font-weight:700;font-size:11px;padding:5px 12px;border:none;border-radius:6px;cursor:pointer;">💳 Pay</button>\`
       : ''
+    
+    // Create a safe purpose display and click handler
+    const hasPurpose = e.purpose && e.purpose.trim().length > 0
+    const purposeDisplay = hasPurpose ? 
+      \`<span onclick='showPurpose(\`\${e.purpose.replace(/`/g, '\\\\`').replace(/\\$/g, '\\\\$')}\`)' style="color:#c9a84c;cursor:pointer;text-decoration:underline dotted;max-width:150px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;" title="Click to view full purpose">\${e.purpose.length > 40 ? e.purpose.substring(0, 40) + '...' : e.purpose}</span>\` : 
+      '<span style="color:#455a77">—</span>'
+    
     return \`
     <tr>
       <td style="color:#455a77;font-family:'JetBrains Mono',monospace;font-size:11px;">#\${e.id}</td>
@@ -177,7 +203,7 @@ function renderResults(d){
       <td style="color:#7a92b5;font-size:13px;" class="hide-sm">\${e.payment_mode||'—'}</td>
       <td style="color:#7a92b5;font-size:13px;">\${fmtDate(e.entry_date)}</td>
       <td style="font-size:13px;">\${e.due_date ? \`<span style="color:\${overdue?'#f87171':'#7a92b5'}">\${fmtDate(e.due_date)}\${overdue?' ⚠':''}</span>\` : '<span style="color:#455a77">—</span>'}</td>
-      <td style="font-size:13px;" class="hide-sm">\${e.purpose ? \`<span onclick="showPurpose(\${JSON.stringify(e.purpose)})" style="color:#c9a84c;cursor:pointer;text-decoration:underline dotted;max-width:120px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;" title="Click to view">\${e.purpose}</span>\` : '<span style="color:#455a77">—</span>'}</td>
+      <td style="font-size:13px;" class="hide-sm">\${purposeDisplay}</td>
       <td><span class="badge badge-\${e.status}">\${e.status}</span></td>
       <td>\${payBtn}</td>
     </tr>\`
@@ -270,8 +296,17 @@ function toast(msg, ok=true){
   setTimeout(()=>d.remove(),3000)
 }
 
-// Allow search on Enter key
-document.addEventListener('keydown', e => { if(e.key==='Enter') doSearch() })
+// Close modal when clicking ESC key
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape') {
+    closePurposeModal()
+  }
+  if(e.key === 'Enter') {
+    doSearch()
+  }
+})
+
+// Click outside modal to close (already handled by onclick on backdrop)
 </script>
 </body>
 </html>`
