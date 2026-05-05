@@ -197,7 +197,7 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
             <input type="datetime-local" name="entry_date" class="input" required>
           </div>
           <div>
-            <label>Due / Reminder Date</label>
+            <label>Due Date</label>
             <input type="date" name="due_date" class="input">
           </div>
           <div>
