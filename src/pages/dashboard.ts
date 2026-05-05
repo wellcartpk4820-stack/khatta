@@ -29,7 +29,7 @@ export function dashboardPage(stats: DashStats, recent: RecentEntry[]): string {
         <p class="text-muted text-sm mt-1">Personal Ledger Overview</p>
       </div>
       <div class="flex gap-3 no-print">
-        <a href="/admin/persons/new" class="btn btn-gold btn-sm">+ Add Person</a>
+        <a href="/admin/persons" class="btn btn-gold btn-sm">+ Add Person</a>
       </div>
     </div>
 
