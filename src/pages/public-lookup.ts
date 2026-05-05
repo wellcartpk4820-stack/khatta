@@ -225,7 +225,7 @@ function renderResults(d){
         <table class="data-table">
           <thead>
             <tr>
-              <th>#</th><th>Type</th><th>Amount</th><th class="hide-sm">Mode</th>
+              <th>#</th><th>Type</th><th>Amount (PKR)</th><th class="hide-sm">Mode</th>
               <th>Date</th><th>Due</th><th class="hide-sm">Purpose</th><th>Status</th><th></th>
             </tr>
           </thead>
