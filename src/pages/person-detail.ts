@@ -213,7 +213,7 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
           <div class="col-span-2">
             <label>Proof Document (optional)</label>
             <input type="file" name="proof" id="proof-file" class="input py-2" accept="image/*,audio/*,video/*,.pdf,.doc,.docx">
-            <p class="text-subtle text-xs mt-1">Images, audio, video, PDF, Word — any file as proof</p>
+            <p class="text-subtle text-xs mt-1">Images, audio, video, PDF, Word</p>
           </div>
           <div class="col-span-2">
             <label>Internal Notes</label>
@@ -247,8 +247,8 @@ export function personDetailPage(person: Person, entries: Entry[], fromDate?: st
           <div>
             <label>Type *</label>
             <select id="ee-type" class="input">
-              <option value="lent">↑ Lent</option>
-              <option value="borrowed">↓ Borrowed</option>
+              <option value="lent">↑ Lent (Gave)</option>
+              <option value="borrowed">↓ Borrow (Receive)</option>
             </select>
           </div>
           <div>
