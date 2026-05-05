@@ -190,7 +190,7 @@ function renderResults(d){
           <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#c9a84c;margin:0 0 4px;">\${person.name}</h2>
           <div style="font-size:13px;color:#7a92b5;display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;">
             \${person.identity_number ? \`<span>🪪 \${person.identity_number}</span>\` : ''}
-            \${person.father_name ? \`<span>👤 S/O \${person.father_name}</span>\` : ''}
+            \${person.father_name ? \`<span>👤 S/D/W/O \${person.father_name}</span>\` : ''}
             \${person.mobile ? \`<span>📱 \${person.mobile}</span>\` : ''}
           </div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#455a77;margin-top:4px;">Khata ID: \${person.id}</div>
