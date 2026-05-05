@@ -93,7 +93,7 @@ export function personsPage(persons: PersonWithSummary[], query = ''): string {
             <input type="text" name="name" class="input" placeholder="Muhammad Ali" required>
           </div>
           <div>
-            <label>CNIC / Identity Number</label>
+            <label>Identity Number</label>
             <input type="text" name="identity_number" class="input" placeholder="36302-1234567-9">
           </div>
           <div>
@@ -140,7 +140,7 @@ export function personsPage(persons: PersonWithSummary[], query = ''): string {
             <input type="text" id="edit-name" class="input" required>
           </div>
           <div>
-            <label>CNIC / Identity Number</label>
+            <label>Identity Number</label>
             <input type="text" id="edit-cnic" class="input">
           </div>
           <div>
